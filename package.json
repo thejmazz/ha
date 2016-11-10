@@ -1,0 +1,36 @@
+{
+  "name": "whitestormjs-starter-pack",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack-dev-server",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thejmazz/whitestormjs-starter-pack.git"
+  },
+  "author": "Julian Mazzitelli <mazzitelli.julian@gmail.com> (jmazz.me)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/thejmazz/whitestormjs-starter-pack/issues"
+  },
+  "homepage": "https://github.com/thejmazz/whitestormjs-starter-pack#readme",
+  "dependencies": {
+    "whs": "^1.1.2"
+  },
+  "devDependencies": {
+    "babel-core": "^6.18.2",
+    "babel-loader": "^6.2.7",
+    "babel-preset-es2015": "^6.18.0",
+    "copy-webpack-plugin": "^4.0.0",
+    "glslify-loader": "^1.0.2",
+    "html-webpack-plugin": "^2.24.1",
+    "raw-loader": "^0.5.1",
+    "webpack": "^1.13.3",
+    "webpack-dev-server": "^1.16.2",
+    "webworkify-webpack": "^2.0.1"
+  }
+}
