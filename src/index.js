@@ -99,26 +99,75 @@ new WHS.Plane({
 }).addTo(world)
 
 const level = ([x, y, z], type) => {
-  const rotation = type === 0 ? { x: 0, y: 0, z: 0 } : { x: 0, y: Math.PI/2, z: 0 }
-  if (type === 0) {
-    new Box({ rotation, position: [x, y, z] }).addTo(world)
-    new Box({ rotation, position: [x, y, z - 1] }).addTo(world)
-    new Box({ rotation, position: [x, y, z - 2] }).addTo(world)
-  } else if (type === 1) {
-    new Box({ rotation, position: [x - 1, y, z - 1] }).addTo(world)
-    new Box({ rotation, position: [x, y, z - 1] }).addTo(world)
-    new Box({ rotation, position: [x + 1, y, z - 1] }).addTo(world)
+  const yRotation = type === 0 ? 0 : Math.PI / 2
+  const rotation = { x: 0, y: yRotation, z: 0 }
+
+  const level = {
+    rotation: yRotation,
+    children: []
   }
+
+  if (type === 0) {
+    level.children = [
+      new Box({ rotation, position: [x, y, z] }),
+      new Box({ rotation, position: [x, y, z - 1] }),
+      new Box({ rotation, position: [x, y, z - 2] })
+    ]
+  } else if (type === 1) {
+    level.children = [
+      new Box({ rotation, position: [x - 1, y, z - 1] }),
+      new Box({ rotation, position: [x, y, z - 1] }),
+      new Box({ rotation, position: [x + 1, y, z - 1] })
+    ]
+  }
+
+  level.children.forEach(component => component.addTo(world))
+
+  return level
 }
 
 const tower = ([x, y, z], height) => {
+  const levels = []
   for (let i = y; i < height; i++) {
-    level([ x, i + 0.5, z ], i % 2)
+    levels.push(level([ x, i + 0.5, z ], i % 2))
   }
+
+  return { levels }
 }
 
-tower([ 0, 0, 0 ], 10)
-tower([ 4, 0, 4 ], 10)
+const tower1 = tower([ 0, 0, 0 ], 10)
+const tower2 = tower([ 0, 0, 6 ], 10)
+
+
+console.log(tower2.levels[9])
+
+// === LOOPS ===
+
+new WHS.Loop(function (clock) {
+  const box = tower1.levels[9].children[1]
+
+  if (box.position.z > 5) {
+    this.stop(world)
+  } else {
+    box.position.z += clock.getDelta() * 0.5
+  }
+}).start(world)
+
+new WHS.Loop(function(clock) {
+  const delta = clock.getDelta()
+  const box = tower2.levels[9].children[1]
+
+  if (box.position.z > 8) {
+    box.position.y -= delta * 0.5
+  } else {
+    box.position.z += delta * 0.5
+  }
+
+  if (box.position.y < 0.5) {
+    this.stop(world)
+  }
+}).start(world)
+
 
 // === START ===
 world.start()
