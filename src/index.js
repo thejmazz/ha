@@ -62,7 +62,8 @@ class Box extends WHS.Box {
       width: 3,
       height: 1,
       depth: 1
-    }
+    },
+    mass: 0
   }
 
   constructor (props) {
@@ -97,23 +98,27 @@ new WHS.Plane({
   }
 }).addTo(world)
 
-
 const level = ([x, y, z], type) => {
   const rotation = type === 0 ? { x: 0, y: 0, z: 0 } : { x: 0, y: Math.PI/2, z: 0 }
   if (type === 0) {
-    new Box({ rotation, position: [0, y, 0] }).addTo(world)
-    new Box({ rotation, position: [0, y, -1] }).addTo(world)
-    new Box({ rotation, position: [0, y, -2] }).addTo(world)
+    new Box({ rotation, position: [x, y, z] }).addTo(world)
+    new Box({ rotation, position: [x, y, z - 1] }).addTo(world)
+    new Box({ rotation, position: [x, y, z - 2] }).addTo(world)
   } else if (type === 1) {
-    new Box({ rotation, position: [-1, y, -1] }).addTo(world)
-    new Box({ rotation, position: [0, y, -1] }).addTo(world)
-    new Box({ rotation, position: [1, y, -1] }).addTo(world)
+    new Box({ rotation, position: [x - 1, y, z - 1] }).addTo(world)
+    new Box({ rotation, position: [x, y, z - 1] }).addTo(world)
+    new Box({ rotation, position: [x + 1, y, z - 1] }).addTo(world)
   }
 }
 
-for (let i = 0; i < 10; i++) {
-  level([0, i + 0.5, 0], i % 2)
+const tower = ([x, y, z], height) => {
+  for (let i = y; i < height; i++) {
+    level([ x, i + 0.5, z ], i % 2)
+  }
 }
+
+tower([ 0, 0, 0 ], 10)
+tower([ 4, 0, 4 ], 10)
 
 // === START ===
 world.start()
