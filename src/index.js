@@ -51,7 +51,33 @@ new WHS.PointLight({
   position: [0, 10, 10]
 }).addTo(world)
 
-// === MESHES ===
+// === COMPONENTS ===
+
+class Box extends WHS.Box {
+  static defaults = {
+    material: {
+      kind: 'lambert'
+    },
+    geometry: {
+      width: 3,
+      height: 1,
+      depth: 1
+    }
+  }
+
+  constructor (props) {
+    super({
+      ... Box.defaults,
+      material: {
+        ...Box.defaults.material,
+        color: pick(flatUIHexColors)
+      },
+      ...props
+    })
+  }
+}
+
+// === World Construction ===
 
 new WHS.Plane({
   geometry: {
@@ -71,56 +97,22 @@ new WHS.Plane({
   }
 }).addTo(world)
 
-const sphere = new WHS.Sphere({
-  geometry: {
-    radius: 3,
-    widthSegments: 32,
-    heightSegments: 32
-  },
 
-  mass: 10, // Mass of physics object.
-
-  material: {
-    color: 0xff00000,
-    kind: 'lambert'
-  },
-
-  position: [0, 100, 0]
-})
-
-const boxMaker = (position, rotation = { x:0, y:0, z:0 }) => new WHS.Box({
-  geometry: {
-    width: 3,
-    height: 1,
-    depth: 1
-  },
-  material: {
-    color: pick(flatUIHexColors),
-    kind: 'lambert'
-  },
-  position,
-  rotation
-})
-
-const base = 0.5
-const levelMaker = (height) => {
-  const y = base + height
-
-  const rotation = height % 2 === 0 ? { x: 0, y: 0, z: 0 } : { x: 0, y: Math.PI/2, z: 0 }
-
-  if (height % 2 === 0) {
-    boxMaker([0, y, 0], rotation).addTo(world)
-    boxMaker([0, y, -1], rotation).addTo(world)
-    boxMaker([0, y, -2], rotation).addTo(world)
-  } else {
-    boxMaker([-1, y, -1], rotation).addTo(world)
-    boxMaker([0, y, -1], rotation).addTo(world)
-    boxMaker([1, y, -1], rotation).addTo(world)
+const level = ([x, y, z], type) => {
+  const rotation = type === 0 ? { x: 0, y: 0, z: 0 } : { x: 0, y: Math.PI/2, z: 0 }
+  if (type === 0) {
+    new Box({ rotation, position: [0, y, 0] }).addTo(world)
+    new Box({ rotation, position: [0, y, -1] }).addTo(world)
+    new Box({ rotation, position: [0, y, -2] }).addTo(world)
+  } else if (type === 1) {
+    new Box({ rotation, position: [-1, y, -1] }).addTo(world)
+    new Box({ rotation, position: [0, y, -1] }).addTo(world)
+    new Box({ rotation, position: [1, y, -1] }).addTo(world)
   }
 }
 
 for (let i = 0; i < 10; i++) {
-  levelMaker(i)
+  level([0, i + 0.5, 0], i % 2)
 }
 
 // === START ===
